@@ -403,7 +403,8 @@ if (doc) {
 		falseChoice = falseChoice || "No";
 		var choicesNote = [" (",
 			(argsLen > 1 &&
-				(trueChoice[$toUpperCase]() !== "YES" || falseChoice[$toUpperCase]() !== "NO")
+				(trueChoice[$toUpperCase]() !== "YES" ||
+				 falseChoice[$toUpperCase]() !== "NO")
 			? // at least one choice defined
 				[
 					   "[", trueChoice[0],  "]",  trueChoice.substr(1),
