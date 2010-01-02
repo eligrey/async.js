@@ -133,7 +133,7 @@ statement.
 Standard Library
 ----------------
 
-The standard library of methods that async.js has be default include the following.
+The standard library of methods that async.js has by default include the following.
 Please note that you are able to redefine any of them to change their functionality.
 
 
@@ -171,7 +171,8 @@ user is using a JavaScript shell, the message is directly printed to their shell
 
 The user is displayed the message and both choice names for their corresponding values. If
 no choice names are specified, the default of "OK" for `true` and "Cancel" for `false`
-will be used. This returns the boolean value corresponding to the choice the user chooses.
+will be used. In a JavaScript shell, the default choices will be "Y/N". This
+returns the boolean value corresponding to the choice the user chooses.
 
 
 Minification
