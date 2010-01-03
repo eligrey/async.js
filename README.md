@@ -1,7 +1,6 @@
 async.js
 ========
 
-*Version 0.1*
 
 **async.js** is a library that aims to make it so you don't have to mess with callbacks
 when making applications in [JavaScript 1.7][1] or higher. It introduces three new globals,
@@ -27,22 +26,22 @@ function's `async` method. For example, an asynced function might look like the 
 Once you have an asynced function, you can use special blocking asynchronous methods with
 the following statement syntax.
 
-    yield methodCallDescriptorGenerator(arg1, ..., argN)
+    yield functionCallDescriptorGenerator(arg1, ..., argN)
 
 If the method returns a value you can use the statement just like a value as long as it's
 not in a comma-separated list of statements (like parameters for a function) without
 encapsulating the expression with parenthesis. For example, you would use the following
 syntax.
 
-    var foo = bar((yield methodCallDescriptorGenerator()), "baz");
+    var foo = bar((yield functionCallDescriptorGenerator()), "baz");
 
-A method call descriptor generator is a function that returns an array including an
+A function call descriptor generator is a function that returns an array including an
 object, a string representing a method of the object, and the arguments to be passed
 to the method, all in that order. async.js by default implements a catch-all general
-method call descriptor generator which is accessible by calling any method on the `to`
-object. You could make your own method call descriptor generator that uses a completely
+function call descriptor generator which is accessible by calling any method on the `to`
+object. You could make your own function call descriptor generator that uses a completely
 different syntax if you wish to do so. The following is an example usage of the `to`
-object catch-all general method call descriptor generator.
+object catch-all general function call descriptor generator.
 
     to.yourMethod("foobar", 123)
 
@@ -52,7 +51,11 @@ Which returns the following to async.js.
 
 async.js handles this and does the apropriate call
 (`async.yourMethod("foobar", 123)`). The execution of the function which called the
-method call descriptor generator is paused until the method finishes.
+function call descriptor generator is paused until the method finishes.
+
+Due to it being impossible to propagate errors up to an asynced function, null is returned
+instead of an error being thrown. When implementing your own async.js methods, only return
+null if an error occured or an undesireable condition has been met.
 
 
 Examples
