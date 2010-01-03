@@ -1,6 +1,5 @@
 /*
  * async.js
- * Version 0.1
  *
  * async.js converts synchronous actions to asynchronous actions in functions.
  *
@@ -27,10 +26,7 @@ async = function async (fn) {
 	return function () {
 		var gen = fn.apply(this, arguments);
 		if (Object.prototype.toString.call(gen) === "[object Generator]") {
-			var callback = function (response, error) {
-				if (error) {
-					throw error;
-				}
+			var callback = function (response) {
 				try {
 					var descriptor = gen.send(response);
 					if (descriptor) {
@@ -45,12 +41,9 @@ async = function async (fn) {
 True  = !0,
 False = !true,
 Null  = null,
-silentlyFail = function ({}, callback) {
-	callback();
-},
-unsupported = function ({}, callback) {
-	callback(Null, "Method unsupported");
-},
+returnNull = function ({}, callback) {
+	callback(Null);
+};
 
 doc           = self.document,
 XHR           = self.XMLHttpRequest,
@@ -62,38 +55,9 @@ print         = self.print,
 readline      = self.readline,
 
 $toUpperCase    = "toUpperCase",
-$addEvtListener = "addEventListener";
+$addEvtListener = "addEventListener",
 
-async.import = (function () {
-	if (importScripts) {
-		return function (files, callback) {
-			try {
-				importScripts.apply(self, files);
-			} catch (error) {
-				callback(Null, error);
-				return;
-			}
-			callback();
-		};
-	} else if (XHR) {
-		return async(function (files, callback) {
-			var response;
-			for (var i = 0, len = files.length; i < len; i++) {
-				try {
-					globalEval((yield [async, "request", [files[i]]]).responseText);
-				} catch (error) {
-					callback(Null, error);
-					break;
-				}
-			}
-			callback();
-		});
-	} else {
-		return unsupported;
-	}
-}());
-
-async.request = (function () {
+req = async.request = (function () {
 	if (XHR) {
 		return function ({0: url, 1: method, 2: data, length: argsLen}, callback) {
 			var req = new XHR;
@@ -103,14 +67,42 @@ async.request = (function () {
 					if (req.status === 200 || req.status === 0) {
 						callback(req);
 					} else {
-						callback(req, new Error("Unsuccessful request"));
+						callback(Null);
 					}
 				}
 			}, False);
 			req.send(argsLen > 2 ? data : Null);
 		};
 	} else {
-		return unsupported;
+		return returnNull;
+	}
+}());
+
+async.import = (function () {
+	if (importScripts) {
+		return function (files, callback) {
+			try {
+				importScripts.apply(self, files);
+			} catch (error) {
+				callback(Null);
+				return;
+			}
+			callback(True);
+		};
+	} else if (XHR) {
+		return async(function (files, callback) {
+			for (var i = 0, len = files.length; i < len; i++) {
+				try {
+					globalEval((yield [req, [files[i]]]).responseText);
+				} catch (error) {
+					callback(Null);
+					return;
+				}
+			}
+			callback(True);
+		});
+	} else {
+		return returnNull;
 	}
 }());
 
@@ -122,10 +114,10 @@ async.sleep = (function () {
 	} else if (sleep) { // thread-safe shell
 		return function ([seconds], callback) {
 			sleep(seconds);
-			callback();
+			callback(True);
 		};
 	} else {
-		return silentlyFail;
+		return returnNull;
 	}
 }());
 
@@ -133,15 +125,15 @@ async.puts = (function () {
 	if (console && console.log) {
 		return function ([message], callback) {
 			console.log(message);
-			callback();
+			callback(True);
 		};
 	} else if (print && !doc) { // shell
 		return function ([message], callback) {
 			print(message);
-			callback();
+			callback(True);
 		};
 	} else {
-		return silentlyFail;
+		return returnNull;
 	}
 }());
 
@@ -207,12 +199,12 @@ if (doc) {
 				currentForm = Null;
 			}
 			if (formsQueue.length) {
-				displayForm.apply(this, formsQueue.shift());
+				displayForm(formsQueue.shift(), formsQueue.shift());
 			}
 		},
 		outContainerStyle;
 		
-		async.puts === silentlyFail && (async.puts = function (args, callback) {
+		async.puts === returnNull && (async.puts = function (args, callback) {
 		// don't show output log until puts is called once
 		
 		var window = doc.defaultView,
@@ -303,7 +295,7 @@ if (doc) {
 			outStyle.whiteSpace        = "pre-wrap";
 			out[$appendChild](createTextNode("" + message));
 			output.scrollTop           = output.scrollHeight;
-			callback();
+			callback(True);
 		})(args, callback);
 	
 		});
@@ -336,7 +328,7 @@ if (doc) {
 			clickListener = function (evt) {
 				cancelButton.removeEventListener($click, clickListener, False);
 				okButton.removeEventListener($click, clickListener, False);
-				callback(evt.target === okButton ? textArea.value : Null);
+				callback(evt.target === okButton ? textArea.value : False);
 				displayNextForm();
 			};
 			
@@ -344,7 +336,7 @@ if (doc) {
 			okButton[$addEvtListener]    ($click, clickListener, False);
 			
 			if (currentForm) {
-				formsQueue.push([message, controls]);
+				formsQueue.push(message, controls);
 			} else {
 				displayForm(message, controls);
 			}
@@ -373,7 +365,7 @@ if (doc) {
 			trueButton[$addEvtListener]($click, clickListener, False);
 	
 			if (currentForm) {
-				formsQueue.push([message, buttons]);
+				formsQueue.push(message, buttons);
 			} else {
 				displayForm(message, buttons);
 			}
@@ -381,7 +373,7 @@ if (doc) {
 	}());
 } else {
 
-	async.gets = (function () {
+	var gets = async.gets = (function () {
 		if (readline && print) { // shell
 			return function ([message], callback) {
 				if (message) {
@@ -390,7 +382,7 @@ if (doc) {
 				callback(readline());
 			};
 		} else { // unsupported
-			return function (callback) { // silently fail with empty string
+			return function (callback) { // silently fail with an empty string
 				callback("");
 			};
 		}
@@ -415,7 +407,7 @@ if (doc) {
 			),
 		")"].join("");
 		
-		async.gets(function (response) {
+		gets(function (response) {
 			callback(response &&
 			         response[0][$toUpperCase]() === trueChoice[0][$toUpperCase]());
 		}, [message + choicesNote]);
