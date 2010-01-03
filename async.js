@@ -237,7 +237,7 @@ if (doc) {
 		outputStyle.overflow = "auto";
 	
 		resizeHandleStyle.height = "4px";
-		resizeHandleStyle.cursor = "row-resize";
+		resizeHandleStyle.cursor = "n-resize";
 		resizeHandleStyle.backgroundColor = "black";
 	
 		window[$addEvtListener]("resize", onResize, False);
