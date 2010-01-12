@@ -3,7 +3,7 @@
  *
  * async.js converts synchronous actions to asynchronous actions in functions.
  *
- * 2010-01-02
+ * 2010-01-11
  * 
  * By Elijah Grey, http://eligrey.com
  *
@@ -13,19 +13,26 @@
 
 //@requires JavaScript 1.7
 
-// Minification note: Only minify this using Dean Edward's Packer 3.1 or higher.
-// Previous versions of Packer incorrectly modify the syntax of JavaScript 1.7 code.
-// http://base2.googlecode.com/svn/trunk/src/apps/packer/packer.html
+/* Minification note:
+ *   Only minify this using Dean Edward's Packer 3.1 or higher.
+ *   Previous versions of Packer incorrectly modify the syntax of JavaScript 1.7 code.
+ *   See http://base2.googlecode.com/svn/trunk/src/apps/packer/packer.html
+ *   You may also have to manually minify object literal (not array literal)
+ *   destructuring assignment function parameters. Functions that use this are marked
+ *   with "{{OLDA}}" in a comment before them.
+*/
 
 var [async, to] = (function (self, globalEval) {
 
 "use strict";
 
 var StopIter = self.StopIteration,
+// store original toString in case it is later overwritten (not for minification)
+objToStr = Object.prototype.toString,
 async = function async (fn) {
 	return function () {
 		var gen = fn.apply(this, arguments);
-		if (Object.prototype.toString.call(gen) === "[object Generator]") {
+		if (objToStr.call(gen) === "[object Generator]") {
 			var callback = function (response) {
 				try {
 					var descriptor = gen.send(response);
@@ -39,7 +46,7 @@ async = function async (fn) {
 	};
 },
 True  = !0,
-False = !true,
+False = !True,
 Null  = null,
 returnNull = function ({}, callback) {
 	callback(Null);
@@ -59,6 +66,7 @@ $addEvtListener = "addEventListener",
 
 req = async.request = (function () {
 	if (XHR) {
+		// {{OLDA}}
 		return function ({0: url, 1: method, 2: data, length: argsLen}, callback) {
 			var req = new XHR;
 			req.open((method || "GET"), url, True);
@@ -154,6 +162,7 @@ if (doc) {
 		$style       = "style",
 		docElem      = doc.documentElement,
 		docElemStyle = docElem[$style],
+		$remEvtListener = "removeEventListener",
 		
 		formsQueue = [],
 		currentForm,
@@ -326,14 +335,14 @@ if (doc) {
 			var okButton = buttons[$appendChild](createElement($button));
 			okButton[$appendChild](createTextNode("OK")),
 			clickListener = function (evt) {
-				cancelButton.removeEventListener($click, clickListener, False);
-				okButton.removeEventListener($click, clickListener, False);
+				cancelButton[$remEvtListener]($click, clickListener, False);
+				okButton[$remEvtListener]($click, clickListener, False);
 				callback(evt.target === okButton ? textArea.value : False);
 				displayNextForm();
 			};
 			
 			cancelButton[$addEvtListener]($click, clickListener, False);
-			okButton[$addEvtListener]    ($click, clickListener, False);
+			okButton    [$addEvtListener]($click, clickListener, False);
 			
 			if (currentForm) {
 				formsQueue.push(message, controls);
@@ -352,14 +361,14 @@ if (doc) {
 	
 			var trueButton = buttons[$appendChild](createElement($button)),
 			clickListener = function (evt) {
-				trueButton.removeEventListener($click, clickListener, False);
-				falseButton.removeEventListener($click, clickListener, False);
+				trueButton[$remEvtListener]($click, clickListener, False);
+				falseButton[$remEvtListener]($click, clickListener, False);
 				callback(evt.target === trueButton);
 				displayNextForm();
 			};
 			
 			falseButton[$appendChild](createTextNode(falseChoice || "Cancel"));
-			trueButton[$appendChild](createTextNode(trueChoice || "OK"));
+			trueButton[$appendChild](createTextNode(trueChoice   || "OK"));
 	
 			falseButton[$addEvtListener]($click, clickListener, False);
 			trueButton[$addEvtListener]($click, clickListener, False);
@@ -388,6 +397,7 @@ if (doc) {
 		}
 	}());
 	
+	// {{OLDA}}
 	async.confirm = function ({
 		0: message, 1: trueChoice, 2: falseChoice, length: argsLen
 	}, callback) {
@@ -395,7 +405,7 @@ if (doc) {
 		falseChoice = falseChoice || "No";
 		var choicesNote = [" (",
 			(argsLen > 1 &&
-				(trueChoice[$toUpperCase]() !== "YES" ||
+				(trueChoice[$toUpperCase]()  !== "YES" ||
 				 falseChoice[$toUpperCase]() !== "NO")
 			? // at least one choice defined
 				[
