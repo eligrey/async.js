@@ -11,7 +11,7 @@ asyncTest("request", _(function () {
 
 asyncTest("import", _(function () {
 	expect(1);
-	ok((yield to.import("import-test.js")) && async.importTestPassed, "importing a script");
+	ok((yield to.import("import-test.js")) !== null && async.importTestPassed, "importing a script");
 	start();
 }));
 
