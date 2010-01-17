@@ -140,12 +140,12 @@ The standard library of methods that async.js has by default include the followi
 Please note that you are able to redefine any of them to change their functionality.
 
 
-### sleep(seconds : float) : void
+### sleep(seconds : float) : bool | null
 
 Waits for the amount of seconds specified and then returns.
 
 
-### import(script1 : str, ..., scriptN : str) : void
+### import(script1 : str, ..., scriptN : str) : bool | null
 
 Loads every parameter passed to it as a script in global context.
 
@@ -155,14 +155,14 @@ Loads every parameter passed to it as a script in global context.
 Returns an [XMLHttpRequest][2] of the completed request.
 
 
-### gets(message : str) : str
+### gets(message : str) : str | null
 
 The message is displayed to the user and when they decide to respond, this
 method returns the string inputted by the user. The string may contain line breaks so
 don't assume they won't in your code.
 
 
-### puts(message : str) : void
+### puts(message : str) : bool | null
 
 If the user has a console open which supports `console.log`, the message is displayed to
 the user using `console.log`. If the user is using a browser and does not have a console
@@ -172,10 +172,15 @@ user is using a JavaScript shell, the message is directly printed to their shell
 
 ### confirm(message : str [, trueChoiceName : str] [, falseChoiceName : str]) : bool
 
-The user is displayed the message and both choice names for their corresponding values. If
-no choice names are specified, the default of "OK" for `true` and "Cancel" for `false`
+The message is displayed to the user and both choice names for their corresponding values.
+If no choice names are specified, the default of "OK" for `true` and "Cancel" for `false`
 will be used. In a JavaScript shell, the default choices will be "Y/N". This
 returns the boolean value corresponding to the choice the user chooses.
+
+### inform(message : str) : bool | null
+
+The message is displayed to the user in a way that will get their attention more than
+the puts method.
 
 
 Minification

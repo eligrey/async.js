@@ -50,8 +50,7 @@ False = !True,
 Null  = null,
 returnNull = function ({}, callback) {
 	callback(Null);
-};
-
+},
 doc           = self.document,
 XHR           = self.XMLHttpRequest,
 importScripts = self.importScripts,
@@ -129,7 +128,7 @@ async.sleep = (function () {
 	}
 }());
 
-async.puts = (function () {
+var puts = async.puts = (function () {
 	if (console && console.log) {
 		return function ([message], callback) {
 			console.log(message);
@@ -140,6 +139,27 @@ async.puts = (function () {
 			print(message);
 			callback(True);
 		};
+	} else {
+		return returnNull;
+	}
+}());
+
+async.inform = (function () {
+	if (console) {
+		if (console.info) {
+			return function ([message], callback) {
+				console.info(message);
+				callback(True);
+			};
+		} else if (console.log) {
+			return puts;
+		}
+	} else if (print && readline) { // shell
+		return function ([message], callback) {
+			print(message + "\n\nPress enter to continue");
+			readline();
+			callback(True);
+		}
 	} else {
 		return returnNull;
 	}
@@ -158,7 +178,6 @@ if (doc) {
 		$button      = "button",
 		$appendChild = "appendChild",
 		$click       = "click",
-		$scroll      = "scroll",
 		$style       = "style",
 		docElem      = doc.documentElement,
 		docElemStyle = docElem[$style],
@@ -213,7 +232,7 @@ if (doc) {
 		},
 		outContainerStyle;
 		
-		async.puts === returnNull && (async.puts = function (args, callback) {
+		puts === returnNull && (async.puts = function (args, callback) {
 		// don't show output log until puts is called once
 		
 		var window = doc.defaultView,
@@ -309,7 +328,7 @@ if (doc) {
 	
 		});
 		
-		doc[$addEvtListener]($scroll, function () {
+		doc[$addEvtListener]("scroll", function () {
 			if (outContainerStyle) {
 				outContainerStyle.bottom = -docElem.scrollTop + "px";
 			}
@@ -377,6 +396,28 @@ if (doc) {
 				formsQueue.push(message, buttons);
 			} else {
 				displayForm(message, buttons);
+			}
+		};
+		
+		async.inform = function ([message], callback) {
+			var okButton      = createElement($button),
+			okButtonContainer = createElement($div),
+			clickListener     = function (evt) {
+				okButton[$remEvtListener]($click, clickListener, False);
+				callback(True);
+				displayNextForm();
+			};
+			
+			okButtonContainer[$style].textAlign = "right";
+			okButton[$appendChild](createTextNode("OK"));
+			okButtonContainer[$appendChild](okButton);
+			
+			okButton[$addEvtListener]($click, clickListener, False);
+			
+			if (currentForm) {
+				formsQueue.push(message, okButtonContainer);
+			} else {
+				displayForm(message, okButtonContainer);
 			}
 		};
 	}());

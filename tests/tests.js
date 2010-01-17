@@ -28,6 +28,12 @@ asyncTest("puts and confirm", _(function () {
 	start();
 }));
 
+asyncTest("inform", _(function () {
+	expect(1);
+	ok((yield to.inform("This is a test of the inform method. I hope you feel informed.")), "informing");
+	start();
+}));
+
 asyncTest("sleep", _(function () {
 	expect(1);
 	var startT = new Date,
@@ -36,3 +42,7 @@ asyncTest("sleep", _(function () {
 	ok(endT - startT > 500 && slept !== null, "slept long enough");
 	start();
 }));
+
+x = _(function(msg,c) {
+	(c||new Function)(yield to.puts(msg));
+});
