@@ -150,7 +150,7 @@ Waits for the amount of seconds specified and then returns.
 Loads every parameter passed to it as a script in global context.
 
 
-### request(URL : str, method : str, data : str) : XMLHttpRequest
+### request(URL : str, method : str, data : str) : XMLHttpRequest | null
 
 Returns an [XMLHttpRequest][2] of the completed request.
 
