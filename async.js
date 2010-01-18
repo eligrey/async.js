@@ -235,7 +235,7 @@ if (doc) {
 		puts === returnNull && (async.puts = function (args, callback) {
 		// don't show output log until puts is called once
 		
-		var window = doc.defaultView,
+		var window        = doc.defaultView,
 		outContainer      = createElement($div),
 		resizeHandle      = outContainer[$appendChild](createElement($div)),
 		output            = outContainer[$appendChild](createElement($div)),
