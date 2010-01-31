@@ -2,6 +2,15 @@
 
 module("std lib");
 
+asyncTest("to() FCDG", _(function () {
+	expect(1);
+	var multiply = function (a, b, callback) {
+		callback(a * b);
+	};
+	equals((yield to(multiply, 2, 2)), 4, "working FCD");
+	start();
+}));
+
 asyncTest("request", _(function () {
 	expect(1);
 	var req = yield to.request("request-test");

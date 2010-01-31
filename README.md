@@ -3,9 +3,9 @@ async.js
 
 
 **async.js** is a library that aims to make it so you don't have to mess with callbacks
-when making applications in [JavaScript 1.7][1] or higher. It introduces three new globals,
-`async`, `_` (underscore), and `to`. If the underscore variable is already being used,
-it is not overwritten. async.js also introduces an `async` method inherited by all
+when making applications in [JavaScript 1.7][1] or higher. It introduces three new
+globals, `async`, `_` (underscore), and `to`. If the underscore variable is already being
+used, it is not overwritten. async.js also introduces an `async` method inherited by all
 functions which is equivalent to passing the function to `async`.
 
 
@@ -35,12 +35,12 @@ syntax.
 
     var foo = bar((yield functionCallDescriptorGenerator()), "baz");
 
-A function call descriptor generator is a function that returns an array including a
-function and the arguments to be passed to the function, in that order. async.js by default
-implements a catch-all general function call descriptor generator which is accessible by
-calling any method on the `to` object. You could make your own function call descriptor
-generator that uses a completely different syntax if you wish to do so. The following is
-an example usage of the `to` object catch-all general function call descriptor generator.
+A function call descriptor generator (FCDG) is a function that returns an array including
+a function and the arguments to be passed to the function, in that order. async.js by
+default implements a catch-all general FCDG which is accessible by calling any method on
+the `to` function. You could make your own FCDG that uses a completely different syntax
+if you wish to do so. The following is an example usage of the `to` function
+catch-all general FCDG.
 
     to.yourMethod("foobar", 123)
 
@@ -50,7 +50,17 @@ Which returns the following to async.js.
 
 async.js handles this and does the apropriate call
 (`async.yourMethod("foobar", 123)`). The execution of the function which called the
-function call descriptor generator is paused until the method finishes.
+FCDG is paused until the method finishes.
+
+The `to` function can also be used to create FCDs for functions that are not
+async.js-aware and use the last argument passed to them as a callback. All you have to do
+is pass the function to the `to` function followed by any arguments you wish to call it
+with.
+
+    var multiply = function (a, b, callback) {
+        callback(a * b)
+    },
+    product = yield to(multiply, 5, 5); // product is now 25
 
 Due to it being impossible to propagate errors up to an asynced function, null is returned
 instead of an error being thrown. When implementing your own async.js methods, only return
@@ -135,7 +145,7 @@ statement.
 Standard Library
 ----------------
 
-The standard library of methods that async.js has by default include the following.
+The following is the standard library of methods that async.js has by default.
 Please note that you are able to redefine any of them to change their functionality.
 
 

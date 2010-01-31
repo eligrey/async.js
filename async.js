@@ -3,7 +3,7 @@
  *
  * async.js converts synchronous actions to asynchronous actions in functions.
  *
- * 2010-01-11
+ * 2010-01-31
  * 
  * By Elijah Grey, http://eligrey.com
  *
@@ -39,11 +39,19 @@ async = function async (fn) {
 					if (descriptor) {
 						descriptor[0](descriptor[1], callback);
 					}
-				} catch (error if error instanceof StopIter) {}
+				} catch (error if error === StopIter) {}
 			};
 			callback();
 		}
 	};
+},
+to = function (func) {
+	return [
+		function (args, callback) {
+			async(func).apply(this, args.concat(callback));
+		},
+		Array.slice(arguments, 1)
+	];
 },
 True  = !0,
 False = !True,
@@ -60,8 +68,8 @@ setTimeout    = self.setTimeout,
 print         = self.print,
 readline      = self.readline,
 
-$toUpperCase    = "toUpperCase",
-$addEvtListener = "addEventListener",
+toUpperCase    = "toUpperCase",
+addEvtListener = "addEventListener",
 
 req = async.request = (function () {
 	if (XHR) {
@@ -69,7 +77,7 @@ req = async.request = (function () {
 		return function ({0: url, 1: method, 2: data, length: argsLen}, callback) {
 			var req = new XHR;
 			req.open((method || "GET"), url, True);
-			req[$addEvtListener]("readystatechange", function () {
+			req[addEvtListener]("readystatechange", function () {
 				if (req.readyState === 4) {
 					if (req.status === 200 || req.status === 0) {
 						callback(req);
@@ -268,13 +276,13 @@ if (doc) {
 		resizeHandleStyle.cursor = "n-resize";
 		resizeHandleStyle.backgroundColor = "black";
 	
-		window[$addEvtListener]("resize", onResize, False);
+		window[addEvtListener]("resize", onResize, False);
 		
 		docElem.insertBefore(outContainer, docElem.firstChild);
 		
 		onResize();
 	
-		doc[$addEvtListener]("mousemove", function (evt) {
+		doc[addEvtListener]("mousemove", function (evt) {
 			if (draggingHandle) {
 				var mouseY = evt.clientY,
 				viewHeight = window.innerHeight;
@@ -292,16 +300,16 @@ if (doc) {
 			}
 		}, False);
 	
-		doc[$addEvtListener]("mouseup", function () {
+		doc[addEvtListener]("mouseup", function () {
 			draggingHandle = False;
 		}, False);
 	
-		resizeHandle[$addEvtListener]("mousedown", function (evt) {
+		resizeHandle[addEvtListener]("mousedown", function (evt) {
 			evt.preventDefault();
 			draggingHandle = True;
 		}, False);
 	
-		resizeHandle[$addEvtListener]("dblclick", function (evt) {
+		resizeHandle[addEvtListener]("dblclick", function (evt) {
 			evt.preventDefault();
 			if (previousHeight && outContainerStyle.height === "100%") {
 				outContainerStyle.height = previousHeight;
@@ -328,7 +336,7 @@ if (doc) {
 	
 		});
 		
-		doc[$addEvtListener]("scroll", function () {
+		doc[addEvtListener]("scroll", function () {
 			if (outContainerStyle) {
 				outContainerStyle.bottom = -docElem.scrollTop + "px";
 			}
@@ -360,8 +368,8 @@ if (doc) {
 				displayNextForm();
 			};
 			
-			cancelButton[$addEvtListener]($click, clickListener, False);
-			okButton    [$addEvtListener]($click, clickListener, False);
+			cancelButton[addEvtListener]($click, clickListener, False);
+			okButton    [addEvtListener]($click, clickListener, False);
 			
 			if (currentForm) {
 				formsQueue.push(message, controls);
@@ -389,8 +397,8 @@ if (doc) {
 			falseButton[$appendChild](createTextNode(falseChoice || "Cancel"));
 			trueButton[$appendChild](createTextNode(trueChoice   || "OK"));
 	
-			falseButton[$addEvtListener]($click, clickListener, False);
-			trueButton[$addEvtListener]($click, clickListener, False);
+			falseButton[addEvtListener]($click, clickListener, False);
+			trueButton [addEvtListener]($click, clickListener, False);
 	
 			if (currentForm) {
 				formsQueue.push(message, buttons);
@@ -412,7 +420,7 @@ if (doc) {
 			okButton[$appendChild](createTextNode("OK"));
 			okButtonContainer[$appendChild](okButton);
 			
-			okButton[$addEvtListener]($click, clickListener, False);
+			okButton[addEvtListener]($click, clickListener, False);
 			
 			if (currentForm) {
 				formsQueue.push(message, okButtonContainer);
@@ -446,8 +454,8 @@ if (doc) {
 		falseChoice = falseChoice || "No";
 		var choicesNote = [" (",
 			(argsLen > 1 &&
-				(trueChoice[$toUpperCase]()  !== "YES" ||
-				 falseChoice[$toUpperCase]() !== "NO")
+				(trueChoice[toUpperCase]()  !== "YES" ||
+				 falseChoice[toUpperCase]() !== "NO")
 			? // at least one choice defined
 				[
 					   "[", trueChoice[0],  "]",  trueChoice.substr(1),
@@ -460,16 +468,16 @@ if (doc) {
 		
 		gets(function (response) {
 			callback(response &&
-			         response[0][$toUpperCase]() === trueChoice[0][$toUpperCase]());
+			         response[0][toUpperCase]() === trueChoice[0][toUpperCase]());
 		}, [message + choicesNote]);
 	};
 }
 
-return [async, {
-	__noSuchMethod__: function(id, args) {
-		return [async[id], args];
-	}
-}];
+to.__noSuchMethod__ = function (id, args) {
+	return [async[id], args];
+};
+
+return [async, to];
 
 }(this, eval)),
 _ = _ || async; // don't overwrite the underscore variable if it's already being used
