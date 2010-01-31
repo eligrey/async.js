@@ -35,13 +35,12 @@ syntax.
 
     var foo = bar((yield functionCallDescriptorGenerator()), "baz");
 
-A function call descriptor generator is a function that returns an array including an
-object, a string representing a method of the object, and the arguments to be passed
-to the method, all in that order. async.js by default implements a catch-all general
-function call descriptor generator which is accessible by calling any method on the `to`
-object. You could make your own function call descriptor generator that uses a completely
-different syntax if you wish to do so. The following is an example usage of the `to`
-object catch-all general function call descriptor generator.
+A function call descriptor generator is a function that returns an array including a
+function and the arguments to be passed to the function, in that order. async.js by default
+implements a catch-all general function call descriptor generator which is accessible by
+calling any method on the `to` object. You could make your own function call descriptor
+generator that uses a completely different syntax if you wish to do so. The following is
+an example usage of the `to` object catch-all general function call descriptor generator.
 
     to.yourMethod("foobar", 123)
 
