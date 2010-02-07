@@ -329,6 +329,7 @@ if (doc) {
 			outStyle.borderBottomStyle = "solid";
 			outStyle.borderBottomColor = "lightgray";
 			outStyle.whiteSpace        = "pre-wrap";
+			outStyle.minHeight         = "16px";
 			out[$appendChild](createTextNode("" + message));
 			output.scrollTop           = output.scrollHeight;
 			callback(True);
