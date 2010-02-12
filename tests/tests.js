@@ -24,22 +24,21 @@ asyncTest("import", _(function () {
 	start();
 }));
 
-asyncTest("gets", _(function () {
+asyncTest("prompt", _(function () {
 	expect(1);
-	ok((yield to.gets("Enter something.")) !== null, "getting input");
+	ok((yield to.prompt("Enter something or don't. It doesn't really matter.")) !== null, "getting input");
 	start();
 }));
 
-asyncTest("puts and confirm", _(function () {
+asyncTest("confirm", _(function () {
 	expect(1);
-	yield to.puts("Hello, world!");
-	ok((yield to.confirm('Do you see the text, "Hello, world!" at the bottom of the page?', "Yes", "No")), "confirmation of recieving message");
+	ok((yield to.confirm('Pass this test?', "Yes", "No")), "confirmed passing test");
 	start();
 }));
 
 asyncTest("inform", _(function () {
 	expect(1);
-	ok((yield to.inform("This is a test of the inform method. I hope you feel informed.")) !== null, "informing");
+	ok((yield to.inform("This is a test of the inform method. I hope you feel informed.")) !== null, "user has been informed");
 	start();
 }));
 

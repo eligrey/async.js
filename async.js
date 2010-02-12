@@ -136,22 +136,6 @@ async.sleep = (function () {
 	}
 }());
 
-var puts = async.puts = (function () {
-	if (console && console.log) {
-		return function ([message], callback) {
-			console.log(message);
-			callback(True);
-		};
-	} else if (print && !doc) { // shell
-		return function ([message], callback) {
-			print(message);
-			callback(True);
-		};
-	} else {
-		return returnNull;
-	}
-}());
-
 async.inform = (function () {
 	if (console) {
 		if (console.info) {
@@ -160,7 +144,10 @@ async.inform = (function () {
 				callback(True);
 			};
 		} else if (console.log) {
-			return puts;
+			return function ([message], callback) {
+				console.log(message);
+				callback(True);
+			};
 		}
 	} else if (print && readline) { // shell
 		return function ([message], callback) {
@@ -213,140 +200,31 @@ if (doc) {
 			containerStyle.zIndex     = "99999";
 			containerStyle.width      = "100%";
 			containerStyle.paddingTop = "5px";
-			containerStyle.position   = "absolute";
+			containerStyle.position   = "fixed";
 			containerStyle.left       = "0px";
-			containerStyle.top        = docElem.scrollTop + "px";
+			containerStyle.top        = "0px";
 	
 			fieldsetStyle.color           = "black";
 			fieldsetStyle.backgroundColor = "white";
 			fieldsetStyle.borderRadius = fieldsetStyle.MozBorderRadius = "9px";
 	
-			currentForm = docElem.insertBefore(
-				container, docElem.firstChild
-			);
+			currentForm = docElem.insertBefore(container, docElem.firstChild);
 			
 			prevPaddingTop = docElemStyle.paddingTop;
 			docElemStyle.paddingTop = container.clientHeight + "px";
 		},
 		displayNextForm = function () {
 			if (currentForm) {
-				currentForm.parentNode.removeChild(currentForm);
+				docElem.removeChild(currentForm);
 				docElemStyle.paddingTop = prevPaddingTop;
 				currentForm = Null;
 			}
 			if (formsQueue.length) {
 				displayForm(formsQueue.shift(), formsQueue.shift());
 			}
-		},
-		outContainerStyle;
-		
-		puts === returnNull && (async.puts = function (args, callback) {
-		// don't show output log until puts is called once
-		
-		var window        = doc.defaultView,
-		outContainer      = createElement($div),
-		resizeHandle      = outContainer[$appendChild](createElement($div)),
-		output            = outContainer[$appendChild](createElement($div)),
-		outputStyle       = output[$style],
-		resizeHandleStyle = resizeHandle[$style],
-		draggingHandle    = False,
-		previousHeight    = False,
-		onResize          = function () {
-			outputStyle.height = (outContainer.clientHeight -
-				                  resizeHandle.clientHeight) + "px";
-			// have a blank space large enough to fit the output box at the page's bottom
-			docElemStyle.paddingBottom = outContainer.clientHeight + "px";
 		};
 		
-		outContainerStyle = outContainer[$style];
-	
-		outContainerStyle.zIndex          = "100000";
-		outContainerStyle.fontFamily      = "monospace";
-		outContainerStyle.color           = "black";
-		outContainerStyle.backgroundColor = "white";
-		outContainerStyle.position        = "absolute";
-		outContainerStyle.width           = "100%";
-		outContainerStyle.bottom          = -docElem.scrollTop + "px";
-		outContainerStyle.left            = "0px";
-		outContainerStyle.height          = "15%";
-	
-		outputStyle.overflow = "auto";
-	
-		resizeHandleStyle.height = "4px";
-		resizeHandleStyle.cursor = "n-resize";
-		resizeHandleStyle.backgroundColor = "black";
-	
-		window[addEvtListener]("resize", onResize, False);
-		
-		docElem.insertBefore(outContainer, docElem.firstChild);
-		
-		onResize();
-	
-		doc[addEvtListener]("mousemove", function (evt) {
-			if (draggingHandle) {
-				var mouseY = evt.clientY,
-				viewHeight = window.innerHeight;
-			
-				// constrain the output box inside the viewport's dimensions
-				if (mouseY < 0) {
-					mouseY = 0;
-				}
-				if (mouseY + resizeHandle.clientHeight > viewHeight) {
-					mouseY = viewHeight - resizeHandle.clientHeight;
-				}
-			
-				outContainerStyle.height = 100 - (mouseY / viewHeight) * 100 + "%";
-				onResize();
-			}
-		}, False);
-	
-		doc[addEvtListener]("mouseup", function () {
-			draggingHandle = False;
-		}, False);
-	
-		resizeHandle[addEvtListener]("mousedown", function (evt) {
-			evt.preventDefault();
-			draggingHandle = True;
-		}, False);
-	
-		resizeHandle[addEvtListener]("dblclick", function (evt) {
-			evt.preventDefault();
-			if (previousHeight && outContainerStyle.height === "100%") {
-				outContainerStyle.height = previousHeight;
-				previousHeight = False;
-			} else {
-				previousHeight = outContainerStyle.height;
-				outContainerStyle.height = "100%";
-			}
-			onResize();
-			output.focus();
-		}, False);
-		
-		(async.puts = function ([message], callback) {
-			var out = output[$appendChild](createElement($div)),
-			outStyle = out[$style];
-			outStyle.borderBottomWidth = "1px";
-			outStyle.borderBottomStyle = "solid";
-			outStyle.borderBottomColor = "lightgray";
-			outStyle.whiteSpace        = "pre-wrap";
-			outStyle.minHeight         = "16px";
-			out[$appendChild](createTextNode("" + message));
-			output.scrollTop           = output.scrollHeight;
-			callback(True);
-		})(args, callback);
-	
-		});
-		
-		doc[addEvtListener]("scroll", function () {
-			if (outContainerStyle) {
-				outContainerStyle.bottom = -docElem.scrollTop + "px";
-			}
-			if (currentForm) {
-				currentForm[$style].top = docElem.scrollTop + "px";
-			}
-		}, False);
-		
-		async.gets = function ([message], callback) {
+		async.prompt = function ([message], callback) {
 			var controls      = createElement($div),
 			    textArea      = controls[$appendChild](createElement("textarea")),
 			    buttons       = controls[$appendChild](createElement($div)),
@@ -432,7 +310,7 @@ if (doc) {
 	}());
 } else {
 
-	var gets = async.gets = (function () {
+	var prompt = async.prompt = (function () {
 		if (readline && print) { // shell
 			return function ([message], callback) {
 				if (message) {
@@ -467,7 +345,7 @@ if (doc) {
 			),
 		")"].join("");
 		
-		gets(function (response) {
+		prompt(function (response) {
 			callback(response &&
 			         response[0][toUpperCase]() === trueChoice[0][toUpperCase]());
 		}, [message + choicesNote]);

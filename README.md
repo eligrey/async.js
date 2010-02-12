@@ -105,7 +105,7 @@ alert yet still can utilize execution-blocking features.
     yield to.request("feedback", "POST", (
         yield to.gets("What are your impressions of async.js?")
     ));
-    yield to.puts("Thanks for your feedback!");
+    yield to.inform("Thanks for your feedback!");
     // do more stuff here
 
 As opposed to the following, which is functionally equivalent to the previous code but
@@ -117,7 +117,7 @@ doesn't use async.js's blocking features.
             async.request(
                 ["feedback", "POST", response],
                 function () {
-                    async.puts(
+                    async.inform(
                         ["Thanks for your feedback!"],
                         function () {
                             // do more stuff here
@@ -164,19 +164,11 @@ Loads every parameter passed to it as a script in global context.
 Returns an [XMLHttpRequest][2] of the completed request.
 
 
-### gets(message : str) : str | null
+### prompt(message : str) : str | null
 
 The message is displayed to the user and when they decide to respond, this
 method returns the string inputted by the user. The string may contain line breaks so
 don't assume they won't in your code.
-
-
-### puts(message : str) : bool | null
-
-If the user has a console open which supports `console.log`, the message is displayed to
-the user using `console.log`. If the user is using a browser and does not have a console
-open, the message is outputted to a log created at the bottom of the page. If the
-user is using a JavaScript shell, the message is directly printed to their shell.
 
 
 ### confirm(message : str [, trueChoiceName : str] [, falseChoiceName : str]) : bool
@@ -188,8 +180,7 @@ returns the boolean value corresponding to the choice the user chooses.
 
 ### inform(message : str) : bool | null
 
-The message is displayed to the user in a way that will get their attention more than
-the puts method.
+The message is displayed to the user in a way that will get their attention.
 
 
 Minification
