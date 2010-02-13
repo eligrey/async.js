@@ -42,6 +42,8 @@ async = function async (fn) {
 				} catch (error if error === StopIter) {}
 			};
 			callback();
+		} else {
+			return gen;
 		}
 	};
 },
