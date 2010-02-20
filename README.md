@@ -103,7 +103,7 @@ The following code does not use any obtrusive and annoying functions like prompt
 alert yet still can utilize execution-blocking features.
 
     yield to.request("feedback", "POST", (
-        yield to.gets("What are your impressions of async.js?")
+        yield to.prompt("What are your impressions of async.js?")
     ));
     yield to.inform("Thanks for your feedback!");
     // do more stuff here
@@ -111,7 +111,7 @@ alert yet still can utilize execution-blocking features.
 As opposed to the following, which is functionally equivalent to the previous code but
 doesn't use async.js's blocking features.
 
-    async.gets(
+    async.prompt(
         ["What are your impressions of async.js?"],
         function (response) {
             async.request(
