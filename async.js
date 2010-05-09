@@ -61,6 +61,9 @@ Null  = null,
 returnNull = function ({}, callback) {
 	callback(Null);
 },
+l = function (string) {
+	return string.toLocaleString();
+},
 doc           = self.document,
 XHR           = self.XMLHttpRequest,
 importScripts = self.importScripts,
@@ -70,7 +73,7 @@ setTimeout    = self.setTimeout,
 print         = self.print,
 readline      = self.readline,
 
-toUpperCase    = "toUpperCase",
+toUpperCase    = "toLocaleUpperCase",
 addEvtListener = "addEventListener",
 
 req = async.request = (function () {
@@ -153,7 +156,7 @@ async.inform = (function () {
 		}
 	} else if (print && readline) { // shell
 		return function ([message], callback) {
-			print(message + "\n\nPress enter to continue");
+			print(message + l("\n\nPress enter to continue"));
 			readline();
 			callback(True);
 		}
@@ -238,10 +241,10 @@ if (doc) {
 			textAreaStyle.resize = "vertical";
 			
 			var cancelButton = buttons[$appendChild](createElement($button));
-			cancelButton[$appendChild](createTextNode("Cancel"));
+			cancelButton[$appendChild](createTextNode(l("Cancel")));
 			buttons[$appendChild](createTextNode(" "));
 			var okButton = buttons[$appendChild](createElement($button));
-			okButton[$appendChild](createTextNode("OK")),
+			okButton[$appendChild](createTextNode(l("OK"))),
 			clickListener = function (evt) {
 				cancelButton[$remEvtListener]($click, clickListener, False);
 				okButton[$remEvtListener]($click, clickListener, False);
@@ -275,8 +278,8 @@ if (doc) {
 				displayNextForm();
 			};
 			
-			falseButton[$appendChild](createTextNode(falseChoice || "Cancel"));
-			trueButton[$appendChild](createTextNode(trueChoice   || "OK"));
+			falseButton[$appendChild](createTextNode(falseChoice || l("Cancel")));
+			trueButton[$appendChild](createTextNode(trueChoice   || l("OK")));
 	
 			falseButton[addEvtListener]($click, clickListener, False);
 			trueButton [addEvtListener]($click, clickListener, False);
@@ -298,7 +301,7 @@ if (doc) {
 			};
 			
 			okButtonContainer[$style].textAlign = "right";
-			okButton[$appendChild](createTextNode("OK"));
+			okButton[$appendChild](createTextNode(l("OK")));
 			okButtonContainer[$appendChild](okButton);
 			
 			okButton[addEvtListener]($click, clickListener, False);
@@ -331,12 +334,12 @@ if (doc) {
 	async.confirm = function ({
 		0: message, 1: trueChoice, 2: falseChoice, length: argsLen
 	}, callback) {
-		trueChoice  = trueChoice  || "Yes";
-		falseChoice = falseChoice || "No";
+		trueChoice  = trueChoice  || l("Yes");
+		falseChoice = falseChoice || l("No");
 		var choicesNote = [" (",
 			(argsLen > 1 &&
-				(trueChoice[toUpperCase]()  !== "YES" ||
-				 falseChoice[toUpperCase]() !== "NO")
+				(trueChoice[toUpperCase]()  !== l("YES") ||
+				 falseChoice[toUpperCase]() !== l("NO"))
 			? // at least one choice defined
 				[
 					   "[", trueChoice[0],  "]",  trueChoice.substr(1),
