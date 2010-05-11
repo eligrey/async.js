@@ -190,6 +190,9 @@ Only minify async.js using Dean Edward's [Packer 3.1 or higher][3]. Previous ver
 Packer incorrectly modify the syntax of JavaScript 1.7 code.
 
 
+![](//in.getclicky.com/212712ns.gif)
+
+
   [1]: https://developer.mozilla.org/en/New_in_javascript_1.7
   [2]: http://en.wikipedia.org/wiki/XMLHttpRequest
   [3]: http://base2.googlecode.com/svn/trunk/src/apps/packer/packer.html
