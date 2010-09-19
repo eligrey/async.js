@@ -22,6 +22,8 @@
  *   with "{{OLDA}}" in a comment before them.
 */
 
+/*! @source http://purl.eligrey.com/github/async.js/blob/master/async.js*/
+
 var [async, to] = (function (self, globalEval) {
 
 "use strict";
