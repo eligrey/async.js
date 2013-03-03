@@ -9,64 +9,6 @@ used, it is not overwritten. async.js also introduces an `async` method inherite
 functions which is equivalent to passing the function to `async`.
 
 
-Usage
------
-
-First of all, when including async.js in a document, make sure to use the media type,
-`application/javascript;version=1.7`.
-
-To make use of the features of async.js, you must use an asynced function,
-which can be created by passing a function to either `async` or `_` or calling the
-function's `async` method. For example, an asynced function might look like the following.
-
-    var myFunction = _(function () {
-        // do stuff here
-    });
-
-Once you have an asynced function, you can use special blocking asynchronous methods with
-the following statement syntax.
-
-    yield functionCallDescriptorGenerator(arg1, ..., argN)
-
-If the method returns a value you can use the statement just like a value as long as it's
-not in a comma-separated list of statements (like parameters for a function) without
-encapsulating the expression with parenthesis. For example, you would use the following
-syntax.
-
-    var foo = bar((yield functionCallDescriptorGenerator()), "baz");
-
-A function call descriptor generator (FCDG) is a function that returns an array including
-a function and the arguments to be passed to the function, in that order. async.js by
-default implements a catch-all general FCDG which is accessible by calling any method on
-the `to` function. You could make your own FCDG that uses a completely different syntax
-if you wish to do so. The following is an example usage of the `to` function
-catch-all general FCDG.
-
-    to.yourMethod("foobar", 123)
-
-Which returns the following to async.js.
-
-    [async.yourMethod, ["foobar", 123]]
-
-async.js handles this and does the apropriate call
-(`async.yourMethod("foobar", 123)`). The execution of the function which called the
-FCDG is paused until the method finishes.
-
-The `to` function can also be used to create FCDs for functions that are not
-async.js-aware and use the last argument passed to them as a callback. All you have to do
-is pass the function to the `to` function followed by any arguments you wish to call it
-with.
-
-    var multiply = function (a, b, callback) {
-        callback(a * b)
-    },
-    product = yield to(multiply, 5, 5); // product is now 25
-
-Due to it being impossible to propagate errors up to an asynced function, null is returned
-instead of an error being thrown. When implementing your own async.js methods, only return
-null if an error occured or an undesireable condition has been met.
-
-
 Examples
 --------
 
@@ -140,6 +82,64 @@ That's a lot of callbacks, all of which are implied when you use async.js.
 You could then use `yield to.yourMethodName(aParameterThatFunctionUses)` and immediately
 start writing code that depends on `thatFunctionThatUsesCallbacks` function after the
 statement.
+
+
+Usage
+-----
+
+First of all, when including async.js in a document, make sure to use the media type,
+`application/javascript;version=1.7`.
+
+To make use of the features of async.js, you must use an asynced function,
+which can be created by passing a function to either `async` or `_` or calling the
+function's `async` method. For example, an asynced function might look like the following.
+
+    var myFunction = _(function () {
+        // do stuff here
+    });
+
+Once you have an asynced function, you can use special blocking asynchronous methods with
+the following statement syntax.
+
+    yield functionCallDescriptorGenerator(arg1, ..., argN)
+
+If the method returns a value you can use the statement just like a value as long as it's
+not in a comma-separated list of statements (like parameters for a function) without
+encapsulating the expression with parenthesis. For example, you would use the following
+syntax.
+
+    var foo = bar((yield functionCallDescriptorGenerator()), "baz");
+
+A function call descriptor generator (FCDG) is a function that returns an array including
+a function and the arguments to be passed to the function, in that order. async.js by
+default implements a catch-all general FCDG which is accessible by calling any method on
+the `to` function. You could make your own FCDG that uses a completely different syntax
+if you wish to do so. The following is an example usage of the `to` function
+catch-all general FCDG.
+
+    to.yourMethod("foobar", 123)
+
+Which returns the following to async.js.
+
+    [async.yourMethod, ["foobar", 123]]
+
+async.js handles this and does the apropriate call
+(`async.yourMethod("foobar", 123)`). The execution of the function which called the
+FCDG is paused until the method finishes.
+
+The `to` function can also be used to create FCDs for functions that are not
+async.js-aware and use the last argument passed to them as a callback. All you have to do
+is pass the function to the `to` function followed by any arguments you wish to call it
+with.
+
+    var multiply = function (a, b, callback) {
+        callback(a * b)
+    },
+    product = yield to(multiply, 5, 5); // product is now 25
+
+Due to it being impossible to propagate errors up to an asynced function, null is returned
+instead of an error being thrown. When implementing your own async.js methods, only return
+null if an error occured or an undesireable condition has been met.
 
 
 Standard Library
