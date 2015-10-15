@@ -6,8 +6,8 @@
  * 2010-01-31
  * 
  * By Eli Grey, http://eligrey.com
- * Licensed under the X11/MIT License
- *   See LICENSE.md
+ * Licensed under the MIT License
+ *   See https://github.com/eligrey/async.js/blob/master/LICENSE.md
  */
 
 //@requires JavaScript 1.7
