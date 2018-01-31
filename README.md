@@ -2,7 +2,7 @@ async.js
 ========
 
 
-**async.js** is an async/await intrinsics library that aims to make it so you don't have to mess with callbacks
+**async.js** is an async/await framework that aims to make it so you don't have to mess with callbacks
 when making applications in [JavaScript 1.7][1] or higher. It introduces three new
 globals, `async`, `_` (underscore), and `to`. If the underscore variable is already being
 used, it is not overwritten. async.js also introduces an `async` method inherited by all
