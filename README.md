@@ -8,6 +8,8 @@ globals, `async`, `_` (underscore), and `to`. If the underscore variable is alre
 used, it is not overwritten. async.js also introduces an `async` method inherited by all
 functions which is equivalent to passing the function to `async`.
 
+Check out <https://github.com/mfbx9da4/async-await-with-generators> to see this ported to modern JS.
+
 
 Examples
 --------
